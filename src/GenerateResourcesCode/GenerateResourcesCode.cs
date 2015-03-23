@@ -1,19 +1,16 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Resources;
 using System.Text;
 
 namespace Microsoft.DotNet.Build.Tasks
 {
-    public class GenerateResourcesCode : Task
+    public class GenerateResourcesCode
     {
         private TargetLanguage _targetLanguage = TargetLanguage.CSharp;
         private ResXResourceReader _resxReader;
@@ -22,21 +19,17 @@ namespace Microsoft.DotNet.Build.Tasks
         private StringBuilder _debugCode = new StringBuilder();
         private Dictionary<string, int> _keys;
 
-        [Required]
         public string ResxFilePath { get; set; }
 
-        [Required]
         public string IntermediateFilePath { get; set; }
 
-        [Required]
         public string OutputSourceFilePath { get; set; }
 
-        [Required]
         public string AssemblyName { get; set; }
 
         public bool DebugOnly { get; set; }
 
-        public override bool Execute()
+        public bool Execute()
         {
             bool result = true;
 
@@ -64,11 +57,11 @@ namespace Microsoft.DotNet.Build.Tasks
             }
             catch (Exception e)
             {
-                Log.LogMessage(e.Message);
+                Console.Error.WriteLine(e.Message);
 
-                if (e is System.UnauthorizedAccessException)
+                if (e is UnauthorizedAccessException)
                 {
-                    Log.LogMessage("The generated {0} file needs to be updated but the file is read-only.", OutputSourceFilePath);
+                    Console.Error.WriteLine("The generated {0} file needs to be updated but the file is read-only.", OutputSourceFilePath);
                 }
                 result = false; // fail the task
             }
