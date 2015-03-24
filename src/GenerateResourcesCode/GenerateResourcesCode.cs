@@ -15,13 +15,10 @@ namespace Microsoft.DotNet.Build.Tasks
         private TargetLanguage _targetLanguage = TargetLanguage.CSharp;
         private ResXResourceReader _resxReader;
         private StreamWriter _targetStream;
-        private string _intermediateFile;
-        private StringBuilder _debugCode = new StringBuilder();
+        private readonly StringBuilder _debugCode = new StringBuilder();
         private Dictionary<string, int> _keys;
 
         public string ResxFilePath { get; set; }
-
-        public string IntermediateFilePath { get; set; }
 
         public string OutputSourceFilePath { get; set; }
 
@@ -37,8 +34,7 @@ namespace Microsoft.DotNet.Build.Tasks
             {
                 using (_resxReader = new ResXResourceReader(ResxFilePath))
                 {
-                    _intermediateFile = IntermediateFilePath + ".temp";
-                    using (_targetStream = File.CreateText(_intermediateFile))
+                    using (_targetStream = File.CreateText(OutputSourceFilePath))
                     {
 
                         if (String.Equals(Path.GetExtension(OutputSourceFilePath), ".vb", StringComparison.OrdinalIgnoreCase))
@@ -53,7 +49,6 @@ namespace Microsoft.DotNet.Build.Tasks
                         WriteClassEnd();
                     }
                 }
-                ProcessTargetFile();
             }
             catch (Exception e)
             {
@@ -64,12 +59,6 @@ namespace Microsoft.DotNet.Build.Tasks
                     Console.Error.WriteLine("The generated {0} file needs to be updated but the file is read-only.", OutputSourceFilePath);
                 }
                 result = false; // fail the task
-            }
-
-            if (result)
-            {
-                // don't fail the task if this operation failed as we just updating intermediate file and the task already did the needed functionality of generating the code
-                try { File.Move(_intermediateFile, IntermediateFilePath); } catch { }
             }
 
             return result;
@@ -192,21 +181,6 @@ namespace Microsoft.DotNet.Build.Tasks
                 _targetStream.WriteLine("    End Class");
                 _targetStream.WriteLine("End Namespace");
             }
-        }
-
-        private void ProcessTargetFile()
-        {
-            string intermediateContent = File.ReadAllText(_intermediateFile);
-
-            if (File.Exists(OutputSourceFilePath))
-            {
-                string srContent = File.ReadAllText(OutputSourceFilePath);
-
-                if (intermediateContent == srContent)
-                    return; // nothing need to get updated
-            }
-
-            File.WriteAllText(OutputSourceFilePath, intermediateContent);
         }
 
         private enum TargetLanguage

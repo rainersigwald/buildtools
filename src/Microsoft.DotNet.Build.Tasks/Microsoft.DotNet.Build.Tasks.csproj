@@ -20,7 +20,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="GenerateResourcesCode.cs" />
     <Compile Include="GetWorkspaceBranch.cs" />
     <Compile Include="GitTag.cs" />
     <Compile Include="GetPackageVersion.cs" />
