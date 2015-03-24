@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 using System;
 using System.IO;
 using System.Reflection.Metadata;
@@ -16,12 +14,11 @@ namespace Microsoft.DotNet.Build.Tasks
     /// without registering for verification skipping. The assembly cannot be installed to the
     /// GAC.
     /// </summary>
-    public sealed class OpenSourceSign : Task
+    public sealed class OpenSourceSign
     {
         /// <summary>
         /// The full path to the assembly to "Open Source Sign". The file will be modified in place.
         /// </summary>
-        [Required]
         public string AssemblyPath
         {
             get;
@@ -37,7 +34,7 @@ namespace Microsoft.DotNet.Build.Tasks
          + sizeof(Int16)  // minor version
          + sizeof(Int64); // metadata directory
 
-        public override bool Execute()
+        public bool Execute()
         {
             try
             {
@@ -136,7 +133,7 @@ namespace Microsoft.DotNet.Build.Tasks
         /// </summary>
         private void LogError(string format, params object[] args)
         {
-            this.Log.LogError(this.AssemblyPath + ": " + String.Format(format, args));
+            Console.Error.WriteLine(this.AssemblyPath + ": " + String.Format(format, args));
         }
     }
 }
